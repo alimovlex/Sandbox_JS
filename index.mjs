@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 
 console.log("Hello, World!");
-let flags = [
+let gitFlags = [
   '--oneline',
   '--decorate',
   '--color',
@@ -9,15 +9,11 @@ let flags = [
 
 let currentDir = await $`pwd`;
 echo(`Current directory is ${currentDir}.`);
-let listFiles = await `$ls`;
+let listFiles = await $`ls`;
 echo(`${listFiles}`);
-let resp = await fetch('https://ip-api.com');
+let resp = await fetch('https://ip-api.com/json');
 echo(`${resp}`);
-await $`git log ${flags}`
+let gitLog = await $`git log ${gitFlags}`;
+echo(`${gitLog}`);
 
-try {
-  await $`exit 1`;
-} catch (p) {
-  console.log(`Exit code: ${p.exitCode}`); // Exit code: 1
-  console.log(`Error: ${p.stderr}`); // Error:
-}
+
