@@ -8,12 +8,13 @@ let gitFlags = [
 ]
 
 let currentDir = await $`pwd`;
-echo(`Current directory is ${currentDir}.`);
+console.log(`Current directory is ${currentDir}.`);
 let listFiles = await $`ls`;
-echo(`${listFiles}`);
-let resp = await fetch('https://ip-api.com/json');
-echo(`${resp}`);
+console.log(`${listFiles}`);
+let response = await fetch('https://recompile.me');
+if(response.ok) {
+    console.log(await response.text());
+}
 let gitLog = await $`git log ${gitFlags}`;
-echo(`${gitLog}`);
-
+console.log(`${gitLog}`);
 
