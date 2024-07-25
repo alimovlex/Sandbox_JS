@@ -1,4 +1,5 @@
 #!/usr/bin/env zx
+import { $ } from "zx";
 
 console.log("Hello, World!");
 let gitFlags = [
