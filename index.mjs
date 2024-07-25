@@ -3,8 +3,11 @@ import { $ } from "zx";
 
 console.log("Hello, World!");
 let gitFlags = [
+  '--all', 
+  '--decorate', 
   '--oneline',
-  '--decorate',
+  '--graph',
+  '--stat',
   '--color',
 ]
 
