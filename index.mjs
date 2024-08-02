@@ -1,61 +1,82 @@
 #!/usr/bin/env zx
-import { $, argv, cd, chalk, fs, question } from "zx";
+import { $, argv, cd, chalk, fs, question, os } from "zx";
 import path from "path";
 
-console.log(`${process.argv[1]}`);
-let gitFlags = [
-  '--all', 
-  '--decorate', 
-  '--oneline',
-  '--graph',
-  '--stat',
-  '--color',
-]
-
-let currentDir = await $`pwd`;
-console.log(`Current directory is ${currentDir}.`);
-let listFiles = await $`ls`;
-console.log(`${listFiles}`);
-
-let response = await fetch('https://raw.githubusercontent.com/AlexLakatos/computer-puns/main/puns.json');
-if(response.ok) {
-  let puns = await response.json();
-  let randomPun = Math.floor(Math.random() * puns.length);
-  console.log(puns[randomPun].pun);
-  console.log(puns[randomPun].punchline);
+async function verboseErrorMessage(error) {
+  console.error(`Error: ${error.message}`);
+  console.error(`Exit code: ${error.exitCode}`);
+  console.error(`Standard error: ${error.stderr}`);
+  console.error(`Command: ${error.originalCommand}`);
 }
 
-const branch = await $`git branch --show-current`;
-console.log(`Current branch: ${branch}`);
-
-let gitLog = await $`git log ${gitFlags}`;
-console.log(`${gitLog}`);
-
-// Create an array
-const arr = ["apple", "banana", "cherry"];
-// Print the length of the array
-console.log(`The length of the array is ${arr.length}`);
-// Print all elements of the array
-console.log(`All elements of the array are: ${arr}`);
-// Loop through the array using a for-of loop
-console.log("Looping through the array using a for-of loop:");
-for (const element of arr) {
-    console.log(element);
+async function checkRequiredProgramsExist(programs) {
+  try {
+    for (let program of programs) {
+      await $`which ${program}`;
+    }
+  } catch (error) {
+    verboseErrorMessage(error);
+    }
 }
 
-//verbose logging of shell commands
-try {
-  const output = await $`command arg1 arg2`;
-  console.log(`Output: ${output}`);
-} catch (err) {
-  console.error(`Error: ${err.message}`);
-  console.error(`Exit code: ${err.exitCode}`);
-  console.error(`Standard error: ${err.stderr}`);
-  console.error(`Command: ${err.originalCommand}`);
+async function projectInfo() {
+
+  let gitFlags = [
+    '--all', 
+    '--decorate', 
+    '--oneline',
+    '--graph',
+    '--stat',
+    '--color',
+  ]
+  console.log(`${process.argv[1]}`);
+  let currentDir = await $`pwd`;
+  console.log(`Current directory is ${currentDir}.`);
+  let listFiles = await $`ls`;
+  console.log(`${listFiles}`);
+
+  const branch = await $`git branch --show-current`;
+  console.log(`Current branch: ${branch}`);
+
+  let gitLog = await $`git log ${gitFlags}`;
+  //console.log(`${gitLog}`);
+
+  let logFile = "./git.log";
+  fs.createFile(`${logFile}`);
+  fs.writeFile(`${logFile}`, gitLog.stdout, err => {
+    if (err) {
+      verboseErrorMessage(err);
+    } else {
+      console.log("Logged project history to the file successfully!");
+    }
+  });
+  
 }
 
-function exitWithError(errorMessage) {
-  console.error(chalk.red(errorMessage));
-  process.exit(1);
+async function checkWeather(city) {
+  
+  let BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
+  let API_KEY = "dd901d59fd590a54f070075a96812a94";
+  let response = await fetch(`${BASE_URL}?q=${city}&appid=${API_KEY}&units=metric`);
+  if(response.ok) {
+    let json = await response.text();
+    let obj = JSON.parse(json);
+    /*
+    const obj = JSON.parse(json, function (key, value) {
+      console.log(`Key`, key, `->`, value);
+    });
+    */
+   console.log("The weather forecast for:", obj.name);
+   console.log("Current weather:", obj.weather[0].description);
+   console.log("Current temperature:", obj.main.temp, "C");
+   console.log("Current wind speed:", obj.wind.speed, "m/s");
+   console.log("Current humidity:", obj.main.humidity, "%");
+  }
 }
-exitWithError("SCRIPT EXITING");
+
+await checkWeather("London");
+await checkRequiredProgramsExist(["git", "ls", "node", "npx"]);
+await projectInfo();
+
+
+
