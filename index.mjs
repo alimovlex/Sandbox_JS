@@ -66,17 +66,32 @@ async function checkWeather(city) {
       console.log(`Key`, key, `->`, value);
     });
     */
-   console.log("The weather forecast for:", obj.name);
-   console.log("Current weather:", obj.weather[0].description);
-   console.log("Current temperature:", obj.main.temp, "C");
-   console.log("Current wind speed:", obj.wind.speed, "m/s");
-   console.log("Current humidity:", obj.main.humidity, "%");
+   console.log(`The weather forecast for: ${obj.name}
+                Current weather: ${obj.weather[0].description}
+                Current temperature: ${obj.main.temp} C
+                Current wind speed: ${obj.wind.speed} m/s
+                Current humidity: ${obj.main.humidity}%
+              `);
   }
+}
+
+async function systemInfo() {
+  console.log(`Fetchhing system info:
+              ${os.version()}
+              Uptime: ${os.uptime()}
+              OS: ${os.type()} ${os.release()} ${os.arch()}
+              Shell: ${os.userInfo().shell}
+              CPUs: ${os.cpus().length}x ${os.machine}
+              Endianess: ${os.endianness()}
+              Free RAM: ${os.freemem()/(1024*1024)}/${os.totalmem()/(1024*1024)} MB
+              HOME: ${os.homedir()}
+              Hostname: ${os.hostname()}     
+              `)
 }
 
 await checkWeather("London");
 await checkRequiredProgramsExist(["git", "ls", "node", "npx"]);
 await projectInfo();
-
+await systemInfo();
 
 
