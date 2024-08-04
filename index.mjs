@@ -63,7 +63,7 @@ async function checkWeather(city) {
     let obj = JSON.parse(json);
     /*
     const obj = JSON.parse(json, function (key, value) {
-      console.log(`Key`, key, `->`, value);
+      console.log(key, `->`, value);
     });
     */
    console.log(`The weather forecast for: ${obj.name}
